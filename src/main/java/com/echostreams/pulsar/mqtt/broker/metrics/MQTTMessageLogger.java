@@ -16,8 +16,8 @@
 
 package com.echostreams.pulsar.mqtt.broker.metrics;
 
-import com.echostreams.pulsar.mqtt.broker.NettyUtils;
-import com.echostreams.pulsar.mqtt.broker.Utils;
+import com.echostreams.pulsar.mqtt.broker.utils.NettyUtils;
+import com.echostreams.pulsar.mqtt.broker.utils.Utils;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;

@@ -16,6 +16,7 @@
 
 package com.echostreams.pulsar.mqtt.broker;
 
+import com.echostreams.pulsar.mqtt.broker.utils.NettyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import io.netty.channel.ChannelDuplexHandler;

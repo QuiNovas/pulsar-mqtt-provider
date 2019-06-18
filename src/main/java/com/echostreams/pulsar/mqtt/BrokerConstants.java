@@ -37,13 +37,16 @@ public final class BrokerConstants {
 
     /**
      * Defines the SSL implementation to use, default to "JDK".
+     *
      * @see io.netty.handler.ssl.SslProvider#name()
      */
     public static final String SSL_PROVIDER = "ssl_provider";
     public static final String SSL_PORT_PROPERTY_NAME = "ssl_port";
     public static final String JKS_PATH_PROPERTY_NAME = "jks_path";
 
-    /** @see java.security.KeyStore#getInstance(String) for allowed types, default to "jks" */
+    /**
+     * @see java.security.KeyStore#getInstance(String) for allowed types, default to "jks"
+     */
     public static final String KEY_STORE_TYPE = "key_store_type";
     public static final String KEY_STORE_PASSWORD_PROPERTY_NAME = "key_store_password";
     public static final String KEY_MANAGER_PASSWORD_PROPERTY_NAME = "key_manager_password";
@@ -81,6 +84,19 @@ public final class BrokerConstants {
     public static final String BUGSNAG_TOKEN_PROPERTY_NAME = "bugsnag.token";
 
     public static final String STORAGE_CLASS_NAME = "storage_class";
+
+    /**
+     * Pulsar Related Config
+     */
+
+    public static final String PERSISTENT_PROPERTY_NAME = "persistent";
+    public static final String TENANT_PROPERTY_NAME = "tenant";
+    public static final String NAMESPACE_PROPERTY_NAME = "namespace";
+    public static final String PERSISTENT_NAME = "persistent";
+    public static final String TENANT_NAME = "default-tenant";
+    public static final String NAMESPACE_NAME = "default-namespace";
+
+    public static final String PULSAR_TOPIC_NAME_PREFIX = "pulsar_topic_name_prefix";
 
     private BrokerConstants() {
     }

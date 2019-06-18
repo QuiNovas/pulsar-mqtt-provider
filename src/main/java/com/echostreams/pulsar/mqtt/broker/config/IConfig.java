@@ -17,13 +17,14 @@
 package com.echostreams.pulsar.mqtt.broker.config;
 
 import com.echostreams.pulsar.mqtt.BrokerConstants;
+import com.echostreams.pulsar.mqtt.broker.utils.CommonUtils;
 
 /**
  * Base interface for all configuration implementations (filesystem, memory or classpath)
  */
 public abstract class IConfig {
 
-    public static final String DEFAULT_CONFIG = "config/moquette.conf";
+    public static final String DEFAULT_CONFIG = "application.properties";
 
     public abstract void setProperty(String name, String value);
 
@@ -32,16 +33,16 @@ public abstract class IConfig {
      *
      * @param name property name.
      * @return property value.
-     * */
+     */
     public abstract String getProperty(String name);
 
     /**
      * Same semantic of Properties
      *
-     * @param name property name.
+     * @param name         property name.
      * @param defaultValue default value to return in case the property doesn't exists.
      * @return property value.
-     * */
+     */
     public abstract String getProperty(String name, String defaultValue);
 
     void assignDefaults() {
@@ -56,7 +57,19 @@ public abstract class IConfig {
         setProperty(BrokerConstants.AUTHENTICATOR_CLASS_NAME, "");
         setProperty(BrokerConstants.AUTHORIZATOR_CLASS_NAME, "");
         setProperty(BrokerConstants.NETTY_MAX_BYTES_PROPERTY_NAME,
-            String.valueOf(BrokerConstants.DEFAULT_NETTY_MAX_BYTES_IN_MESSAGE));
+                String.valueOf(BrokerConstants.DEFAULT_NETTY_MAX_BYTES_IN_MESSAGE));
+
+        setProperty(BrokerConstants.PERSISTENT_PROPERTY_NAME, BrokerConstants.PERSISTENT_NAME);
+        setProperty(BrokerConstants.TENANT_PROPERTY_NAME, BrokerConstants.TENANT_NAME);
+        setProperty(BrokerConstants.NAMESPACE_PROPERTY_NAME, BrokerConstants.NAMESPACE_NAME);
+
+        // create topic prefix like this persistent://my-tenant/my-namespace
+        String pulsarDefaultTopicNamePrefix = CommonUtils.createTopicNameWithPrefix(
+                getProperty(BrokerConstants.PERSISTENT_PROPERTY_NAME),
+                getProperty(BrokerConstants.TENANT_PROPERTY_NAME),
+                getProperty(BrokerConstants.NAMESPACE_PROPERTY_NAME), null);
+        setProperty(BrokerConstants.PULSAR_TOPIC_NAME_PREFIX, pulsarDefaultTopicNamePrefix);
+
     }
 
     public abstract IResourceLoader getResourceLoader();

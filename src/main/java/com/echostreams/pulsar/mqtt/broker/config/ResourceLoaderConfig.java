@@ -18,6 +18,7 @@ package com.echostreams.pulsar.mqtt.broker.config;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.io.Reader;
 import java.text.ParseException;
 import java.util.Properties;
@@ -72,7 +73,7 @@ public class ResourceLoaderConfig extends IConfig {
         } catch (ParseException pex) {
             LOG.warn(
                     "Unable to parse configuration properties. Using default configuration. "
-                    + "ResourceLoader = {}, configName = {}, cause = {}, errorMessage = {}.",
+                            + "ResourceLoader = {}, configName = {}, cause = {}, errorMessage = {}.",
                     resourceLoader.getName(),
                     configName,
                     pex.getCause(),

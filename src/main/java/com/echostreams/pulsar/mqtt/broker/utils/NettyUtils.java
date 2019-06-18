@@ -14,15 +14,15 @@
  * You may elect to redistribute this code under either of these licenses.
  */
 
-package com.echostreams.pulsar.mqtt.broker;
-
-import java.io.IOException;
+package com.echostreams.pulsar.mqtt.broker.utils;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.mqtt.MqttMessage;
 import io.netty.util.Attribute;
 import io.netty.util.AttributeKey;
+
+import java.io.IOException;
 
 /**
  * Some Netty's channels utilities.

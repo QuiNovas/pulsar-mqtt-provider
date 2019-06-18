@@ -13,6 +13,8 @@
             <outputDirectory/>
             <includes>
                 <include>application.properties</include>
+                <include>acl.conf</include>
+                <include>password_file.conf</include>
                 <include>logback.xml</include>
                 <include>pulsarMqttProvider.sh</include>
                 <include>pulsarMqttProvider.bat</include>

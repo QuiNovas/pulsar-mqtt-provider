@@ -19,6 +19,7 @@ import com.echostreams.pulsar.mqtt.broker.security.IAuthenticator;
 import com.echostreams.pulsar.mqtt.broker.security.PermitAllAuthorizatorPolicy;
 import com.echostreams.pulsar.mqtt.broker.subscriptions.CTrieSubscriptionDirectory;
 import com.echostreams.pulsar.mqtt.broker.subscriptions.ISubscriptionsDirectory;
+import com.echostreams.pulsar.mqtt.broker.utils.NettyUtils;
 import com.echostreams.pulsar.mqtt.persistence.MemorySubscriptionsRepository;
 import io.netty.channel.Channel;
 import io.netty.channel.embedded.EmbeddedChannel;

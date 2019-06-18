@@ -7,16 +7,16 @@
     <groupId>com.echostreams</groupId>
     <artifactId>pulsar-mqtt-provider</artifactId>
     <version>1.0-SNAPSHOT</version>
-	<packaging>jar</packaging>
-	
-	<name>Apache Pulsar MQTT Provider</name>
+    <packaging>jar</packaging>
+
+    <name>Apache Pulsar MQTT Provider</name>
     <description>Java server application that listens for MQTT traffic</description>
     <url>http://mqtt.org/documentation</url>
 
     <licenses>
 
     </licenses>
-    
+
     <developers>
         <developer>
             <email>shankar@seyfertsoft.in</email>
@@ -51,13 +51,13 @@
     </properties>
 
     <dependencies>
-	
+
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>${slf4j.version}</version>
         </dependency>
-		
+
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
@@ -74,7 +74,7 @@
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-buffer</artifactId>
-            <version>${io.netty.version} </version>
+            <version>${io.netty.version}</version>
             <scope>compile</scope>
         </dependency>
 
@@ -110,6 +110,14 @@
             <groupId>io.netty</groupId>
             <artifactId>netty-codec-mqtt</artifactId>
             <version>${io.netty.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-transport-native-epoll</artifactId>
+            <version>${io.netty.version}</version>
+            <classifier>linux-x86_64</classifier>
             <scope>compile</scope>
         </dependency>
 
@@ -158,7 +166,14 @@
         <dependency>
             <groupId>com.bugsnag</groupId>
             <artifactId>bugsnag</artifactId>
-            <version>4.0</version>
+            <version>[3.0,4.0)</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.10</version>
             <scope>compile</scope>
         </dependency>
 
@@ -196,6 +211,28 @@
             <version>2.0.10.Final</version>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>2.6.0</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>1.9.0</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.awaitility</groupId>
+            <artifactId>awaitility</artifactId>
+            <version>3.0.0</version>
+            <scope>test</scope>
+        </dependency>
+
 
         <dependency>
             <groupId>junit</groupId>

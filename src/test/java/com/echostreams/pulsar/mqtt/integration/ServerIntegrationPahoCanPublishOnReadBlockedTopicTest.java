@@ -23,6 +23,7 @@ import com.echostreams.pulsar.mqtt.broker.config.MemoryConfig;
 import com.echostreams.pulsar.mqtt.broker.security.AcceptAllAuthenticator;
 import com.echostreams.pulsar.mqtt.broker.security.IAuthorizatorPolicy;
 import com.echostreams.pulsar.mqtt.broker.subscriptions.Topic;
+import com.echostreams.pulsar.mqtt.interception.InterceptHandler;
 import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.mqtt.MqttMessageBuilders;
 import io.netty.handler.codec.mqtt.MqttPublishMessage;
@@ -38,6 +39,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 import java.util.Properties;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -46,7 +49,7 @@ import static org.junit.Assert.*;
 public class ServerIntegrationPahoCanPublishOnReadBlockedTopicTest {
 
     private static final Logger LOG =
-        LoggerFactory.getLogger(ServerIntegrationPahoCanPublishOnReadBlockedTopicTest.class);
+            LoggerFactory.getLogger(ServerIntegrationPahoCanPublishOnReadBlockedTopicTest.class);
 
     static MqttClientPersistence s_dataStore;
     static MqttClientPersistence s_pubDataStore;
@@ -57,6 +60,8 @@ public class ServerIntegrationPahoCanPublishOnReadBlockedTopicTest {
     MessageCollector m_messagesCollector;
     IConfig m_config;
     private boolean canRead;
+
+    public static final List<InterceptHandler> EMPTY_OBSERVERS = Collections.emptyList();
 
     @BeforeClass
     public static void beforeTests() {
@@ -73,7 +78,7 @@ public class ServerIntegrationPahoCanPublishOnReadBlockedTopicTest {
         canRead = true;
 
         final IAuthorizatorPolicy switchingAuthorizator = new IAuthorizatorPolicy() {
-//            int callCount = 0;
+            //            int callCount = 0;
             @Override
             public boolean canWrite(Topic topic, String user, String client) {
                 return true;
@@ -128,11 +133,11 @@ public class ServerIntegrationPahoCanPublishOnReadBlockedTopicTest {
 
         // Exercise
         MqttPublishMessage message = MqttMessageBuilders.publish()
-            .topicName("/topic")
-            .retained(true)
-            .qos(MqttQoS.AT_MOST_ONCE)
-            .payload(Unpooled.copiedBuffer("Hello World!!".getBytes(UTF_8)))
-            .build();
+                .topicName("/topic")
+                .retained(true)
+                .qos(MqttQoS.AT_MOST_ONCE)
+                .payload(Unpooled.copiedBuffer("Hello World!!".getBytes(UTF_8)))
+                .build();
 
         m_server.internalPublish(message, "INTRLPUB");
 

@@ -16,6 +16,7 @@
 
 package com.echostreams.pulsar.mqtt.broker;
 
+import com.echostreams.pulsar.mqtt.broker.utils.NettyUtils;
 import io.netty.channel.*;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.handler.codec.mqtt.MqttMessage;

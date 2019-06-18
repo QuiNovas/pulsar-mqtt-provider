@@ -17,6 +17,7 @@ package com.echostreams.pulsar.mqtt.broker;
 
 import com.echostreams.pulsar.mqtt.broker.security.IAuthenticator;
 import com.echostreams.pulsar.mqtt.broker.subscriptions.Topic;
+import com.echostreams.pulsar.mqtt.broker.utils.NettyUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;

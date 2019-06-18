@@ -18,6 +18,7 @@ package com.echostreams.pulsar.mqtt.broker;
 import com.echostreams.pulsar.mqtt.broker.subscriptions.ISubscriptionsDirectory;
 import com.echostreams.pulsar.mqtt.broker.subscriptions.Subscription;
 import com.echostreams.pulsar.mqtt.broker.subscriptions.Topic;
+import com.echostreams.pulsar.mqtt.broker.utils.NettyUtils;
 import com.echostreams.pulsar.mqtt.interception.BrokerInterceptor;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -30,7 +31,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.echostreams.pulsar.mqtt.broker.Utils.messageId;
+import static com.echostreams.pulsar.mqtt.broker.utils.Utils.messageId;
 import static io.netty.handler.codec.mqtt.MqttMessageIdVariableHeader.from;
 import static io.netty.handler.codec.mqtt.MqttQoS.*;
 

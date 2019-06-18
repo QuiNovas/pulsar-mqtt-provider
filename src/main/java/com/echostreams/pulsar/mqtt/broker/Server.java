@@ -66,8 +66,8 @@ public class Server {
     public void startServer() throws IOException {
         File defaultConfigurationFile = defaultConfigFile();
         LOG.info("Starting Moquette integration. Configuration file path={}", defaultConfigurationFile.getAbsolutePath());
-        IResourceLoader filesystemLoader = new FileResourceLoader(defaultConfigurationFile);
-        final IConfig config = new ResourceLoaderConfig(filesystemLoader);
+        IResourceLoader classpathResourceLoader = new ClasspathResourceLoader();
+        final IConfig config = new ResourceLoaderConfig(classpathResourceLoader);
         startServer(config);
     }
 
@@ -94,8 +94,8 @@ public class Server {
      * <p>
      * Its suggested to at least have the following properties:
      * <ul>
-     *  <li>port</li>
-     *  <li>password_file</li>
+     * <li>port</li>
+     * <li>password_file</li>
      * </ul>
      *
      * @param configProps the properties map to use as configuration.
@@ -179,14 +179,14 @@ public class Server {
         dispatcher = new PostOffice(subscriptions, retainedRepository, sessions, interceptor, authorizator);
         final BrokerConfiguration brokerConfig = new BrokerConfiguration(config);
         MQTTConnectionFactory connectionFactory = new MQTTConnectionFactory(brokerConfig, authenticator, sessions,
-                                                                            dispatcher);
+                dispatcher);
 
         final NewNettyMQTTHandler mqttHandler = new NewNettyMQTTHandler(connectionFactory);
         acceptor = new NewNettyAcceptor();
         acceptor.initialize(mqttHandler, config, sslCtxCreator);
 
         final long startTime = System.currentTimeMillis() - start;
-        LOG.info("Moquette integration has been started successfully in {} ms", startTime);
+        LOG.info("Moquette integration has been started successfully on in {} ms", startTime);
         initialized = true;
     }
 
@@ -244,7 +244,7 @@ public class Server {
         String interceptorClassName = props.getProperty(BrokerConstants.INTERCEPT_HANDLER_PROPERTY_NAME);
         if (interceptorClassName != null && !interceptorClassName.isEmpty()) {
             InterceptHandler handler = loadClass(interceptorClassName, InterceptHandler.class,
-                                                 Server.class, this);
+                    Server.class, this);
             if (handler != null) {
                 observers.add(handler);
             }
@@ -259,29 +259,29 @@ public class Server {
             // check if constructor with constructor arg class parameter
             // exists
             LOG.info("Invoking constructor with {} argument. ClassName={}, interfaceName={}",
-                     constructorArgClass.getName(), className, intrface.getName());
+                    constructorArgClass.getName(), className, intrface.getName());
             instance = this.getClass().getClassLoader()
-                .loadClass(className)
-                .asSubclass(intrface)
-                .getConstructor(constructorArgClass)
-                .newInstance(props);
+                    .loadClass(className)
+                    .asSubclass(intrface)
+                    .getConstructor(constructorArgClass)
+                    .newInstance(props);
         } catch (InstantiationException | IllegalAccessException | ClassNotFoundException ex) {
             LOG.warn("Unable to invoke constructor with {} argument. ClassName={}, interfaceName={}, cause={}, " +
-                     "errorMessage={}", constructorArgClass.getName(), className, intrface.getName(), ex.getCause(),
-                     ex.getMessage());
+                            "errorMessage={}", constructorArgClass.getName(), className, intrface.getName(), ex.getCause(),
+                    ex.getMessage());
             return null;
         } catch (NoSuchMethodException | InvocationTargetException e) {
             try {
                 LOG.info("Invoking default constructor. ClassName={}, interfaceName={}", className, intrface.getName());
                 // fallback to default constructor
                 instance = this.getClass().getClassLoader()
-                    .loadClass(className)
-                    .asSubclass(intrface)
-                    .getDeclaredConstructor().newInstance();
+                        .loadClass(className)
+                        .asSubclass(intrface)
+                        .getDeclaredConstructor().newInstance();
             } catch (InstantiationException | IllegalAccessException | ClassNotFoundException |
-                NoSuchMethodException | InvocationTargetException ex) {
+                    NoSuchMethodException | InvocationTargetException ex) {
                 LOG.error("Unable to invoke default constructor. ClassName={}, interfaceName={}, cause={}, " +
-                          "errorMessage={}", className, intrface.getName(), ex.getCause(), ex.getMessage());
+                        "errorMessage={}", className, intrface.getName(), ex.getCause(), ex.getMessage());
                 return null;
             }
         }
@@ -301,7 +301,7 @@ public class Server {
         final int messageID = msg.variableHeader().packetId();
         if (!initialized) {
             LOG.error("Moquette is not started, internal message cannot be published. CId: {}, messageId: {}", clientId,
-                      messageID);
+                    messageID);
             throw new IllegalStateException("Can't publish on a integration is not yet started");
         }
         LOG.trace("Internal publishing message CId: {}, messageId: {}", clientId, messageID);
@@ -356,7 +356,7 @@ public class Server {
     public void addInterceptHandler(InterceptHandler interceptHandler) {
         if (!initialized) {
             LOG.error("Moquette is not started, MQTT message interceptor cannot be added. InterceptorId={}",
-                interceptHandler.getID());
+                    interceptHandler.getID());
             throw new IllegalStateException("Can't register interceptors on a integration that is not yet started");
         }
         LOG.info("Adding MQTT message interceptor. InterceptorId={}", interceptHandler.getID());
@@ -371,7 +371,7 @@ public class Server {
     public void removeInterceptHandler(InterceptHandler interceptHandler) {
         if (!initialized) {
             LOG.error("Moquette is not started, MQTT message interceptor cannot be removed. InterceptorId={}",
-                interceptHandler.getID());
+                    interceptHandler.getID());
             throw new IllegalStateException("Can't deregister interceptors from a integration that is not yet started");
         }
         LOG.info("Removing MQTT message interceptor. InterceptorId={}", interceptHandler.getID());
@@ -380,7 +380,7 @@ public class Server {
 
     /**
      * Return a list of descriptors of connected clients.
-     * */
+     */
     public Collection<ClientDescriptor> listConnectedClients() {
         return sessions.listConnectedClients();
     }

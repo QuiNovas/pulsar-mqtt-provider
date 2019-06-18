@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.echostreams.pulsar.mqtt.broker.Utils.messageId;
+import static com.echostreams.pulsar.mqtt.broker.utils.Utils.messageId;
 import static io.netty.handler.codec.mqtt.MqttQoS.FAILURE;
 
 final class Authorizator {

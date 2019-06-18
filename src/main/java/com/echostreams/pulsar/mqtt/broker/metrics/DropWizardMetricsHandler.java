@@ -20,7 +20,7 @@ import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.librato.metrics.reporter.Librato;
 import com.echostreams.pulsar.mqtt.broker.config.IConfig;
-import com.echostreams.pulsar.mqtt.broker.NettyUtils;
+import com.echostreams.pulsar.mqtt.broker.utils.NettyUtils;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.mqtt.MqttMessage;
