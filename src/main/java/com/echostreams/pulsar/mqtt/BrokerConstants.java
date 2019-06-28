@@ -89,14 +89,22 @@ public final class BrokerConstants {
      * Pulsar Related Config
      */
 
-    public static final String PERSISTENT_PROPERTY_NAME = "persistent";
-    public static final String TENANT_PROPERTY_NAME = "tenant";
-    public static final String NAMESPACE_PROPERTY_NAME = "namespace";
-    public static final String PERSISTENT_NAME = "persistent";
-    public static final String TENANT_NAME = "default-tenant";
-    public static final String NAMESPACE_NAME = "default-namespace";
+    public static final String PULSAR_SERVICE_URL_PROPERTY_NAME = "pulsar_service_url";
+    public static final String MESSAGE_STORAGE_TYPE_PROPERTY_NAME = "message_storage_type";
+    public static final String TENANT_PROPERTY_NAME = "tenant_name";
+    public static final String NAMESPACE_PROPERTY_NAME = "namespace_name";
+    public static final String TOPIC_PROCESSING_IDENTIFIER_PROPERTY_NAME = "topic_processing_identifier";
 
-    public static final String PULSAR_TOPIC_NAME_PREFIX = "pulsar_topic_name_prefix";
+    public static final String DOUBLE_FORWARD_SLASH = "://";
+    public static final String SINGLE_FORWARD_SLASH = "/";
+
+    public static String PERSISTENT_NAME = "persistent";
+    public static String TENANT_NAME = "default-tenant";
+    public static String NAMESPACE_NAME = "default-namespace";
+    public static String NON_PERSISTENT_NAME = "non-persistent";
+    public static String PULSAR_TOPIC_NAME_PREFIX = PERSISTENT_NAME + DOUBLE_FORWARD_SLASH + TENANT_NAME + SINGLE_FORWARD_SLASH + NAMESPACE_NAME;
+    public static String TOPIC_PROCESSING_IDENTIFIER = null;
+    public static String PULSAR_SERVICE_URL = "pulsar://localhost:6650";
 
     private BrokerConstants() {
     }

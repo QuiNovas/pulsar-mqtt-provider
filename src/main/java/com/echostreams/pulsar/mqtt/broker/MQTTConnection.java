@@ -17,6 +17,7 @@ package com.echostreams.pulsar.mqtt.broker;
 
 import com.echostreams.pulsar.mqtt.broker.security.IAuthenticator;
 import com.echostreams.pulsar.mqtt.broker.subscriptions.Topic;
+import com.echostreams.pulsar.mqtt.broker.utils.DebugUtils;
 import com.echostreams.pulsar.mqtt.broker.utils.NettyUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
@@ -24,6 +25,9 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.mqtt.*;
 import io.netty.handler.timeout.IdleStateHandler;
+import org.apache.pulsar.client.api.Producer;
+import org.apache.pulsar.client.api.PulsarClientException;
+import org.apache.pulsar.client.api.Schema;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,7 +98,7 @@ final class MQTTConnection {
                 break;
             case PINGREQ:
                 MqttFixedHeader pingHeader = new MqttFixedHeader(MqttMessageType.PINGRESP, false, AT_MOST_ONCE,
-                                                                false, 0);
+                        false, 0);
                 MqttMessage pingResp = new MqttMessage(pingHeader);
                 channel.writeAndFlush(pingResp).addListener(CLOSE_ON_FAILURE);
                 break;
@@ -148,7 +152,7 @@ final class MQTTConnection {
 
             if (!cleanSession) {
                 LOG.warn("MQTT client ID cannot be empty for persistent session. Username: {}, channel: {}",
-                         username, channel);
+                        username, channel);
                 abortConnection(CONNECTION_REFUSED_IDENTIFIER_REJECTED);
                 return;
             }
@@ -156,7 +160,7 @@ final class MQTTConnection {
             // Generating client id.
             clientId = UUID.randomUUID().toString().replace("-", "");
             LOG.debug("Client has connected with integration generated id: {}, username: {}, channel: {}", clientId,
-                      username, channel);
+                    username, channel);
         }
 
         if (!login(msg, clientId)) {
@@ -184,7 +188,7 @@ final class MQTTConnection {
 
     private void setupInflightResender(Channel channel) {
         channel.pipeline()
-            .addFirst("inflightResender", new InflightResender(5_000, TimeUnit.MILLISECONDS));
+                .addFirst("inflightResender", new InflightResender(5_000, TimeUnit.MILLISECONDS));
     }
 
     private void initializeKeepAliveTimeout(Channel channel, MqttConnectMessage msg, String clientId) {
@@ -196,7 +200,7 @@ final class MQTTConnection {
         setIdleTime(channel.pipeline(), idleTime);
 
         LOG.debug("Connection has been configured CId={}, keepAlive={}, removeTemporaryQoS2={}, idleTime={}",
-            clientId, keepAlive, msg.variableHeader().isCleanSession(), idleTime);
+                clientId, keepAlive, msg.variableHeader().isCleanSession(), idleTime);
     }
 
     private void setIdleTime(ChannelPipeline pipeline, int idleTime) {
@@ -218,7 +222,7 @@ final class MQTTConnection {
 
     private MqttConnAckMessage connAck(MqttConnectReturnCode returnCode, boolean sessionPresent) {
         MqttFixedHeader mqttFixedHeader = new MqttFixedHeader(MqttMessageType.CONNACK, false, MqttQoS.AT_MOST_ONCE,
-            false, 0);
+                false, 0);
         MqttConnAckVariableHeader mqttConnAckVariableHeader = new MqttConnAckVariableHeader(returnCode, sessionPresent);
         return new MqttConnAckMessage(mqttFixedHeader, mqttConnAckVariableHeader);
     }
@@ -264,7 +268,7 @@ final class MQTTConnection {
         connected = false;
         //dispatch connection lost to intercept.
         String userName = NettyUtils.userName(channel);
-        postOffice.dispatchConnectionLost(clientID,userName);
+        postOffice.dispatchConnectionLost(clientID, userName);
         LOG.trace("dispatch disconnection: clientId={}, userName={}", clientID, userName);
     }
 
@@ -294,7 +298,7 @@ final class MQTTConnection {
         channel.close().addListener(FIRE_EXCEPTION_ON_FAILURE);
         LOG.trace("Processed DISCONNECT CId={}, channel: {}", clientID, channel);
         String userName = NettyUtils.userName(channel);
-        postOffice.dispatchDisconnection(clientID,userName);
+        postOffice.dispatchDisconnection(clientID, userName);
         LOG.trace("dispatch disconnection: clientId={}, userName={}", clientID, userName);
     }
 
@@ -324,7 +328,7 @@ final class MQTTConnection {
 
     void sendUnsubAckMessage(List<String> topics, String clientID, int messageID) {
         MqttFixedHeader fixedHeader = new MqttFixedHeader(MqttMessageType.UNSUBACK, false, AT_MOST_ONCE,
-            false, 0);
+                false, 0);
         MqttUnsubAckMessage ackMessage = new MqttUnsubAckMessage(fixedHeader, from(messageID));
 
         LOG.trace("Sending UNSUBACK message. CId={}, messageId: {}, topics: {}", clientID, messageID, topics);
@@ -338,7 +342,7 @@ final class MQTTConnection {
         final String topicName = msg.variableHeader().topicName();
         final String clientId = getClientId();
         LOG.trace("Processing PUBLISH message. CId={}, topic: {}, messageId: {}, qos: {}", clientId, topicName,
-                  msg.variableHeader().packetId(), qos);
+                msg.variableHeader().packetId(), qos);
         ByteBuf payload = msg.payload();
         final boolean retain = msg.fixedHeader().isRetain();
         final Topic topic = new Topic(topicName);
@@ -372,7 +376,7 @@ final class MQTTConnection {
     void sendPublishReceived(int messageID) {
         LOG.trace("sendPubRec invoked on channel: {}", channel);
         MqttFixedHeader fixedHeader = new MqttFixedHeader(MqttMessageType.PUBREC, false, AT_MOST_ONCE,
-            false, 0);
+                false, 0);
         MqttPubAckMessage pubRecMessage = new MqttPubAckMessage(fixedHeader, from(messageID));
         sendIfWritableElseDrop(pubRecMessage);
     }
@@ -391,12 +395,30 @@ final class MQTTConnection {
         MqttQoS qos = publishMsg.fixedHeader().qosLevel();
         if (LOG.isTraceEnabled()) {
             LOG.trace("Sending PUBLISH({}) message. MessageId={}, CId={}, topic={}, payload={}", qos, packetId,
-                      clientId, topicName, DebugUtils.payload2Str(publishMsg.payload()));
+                    clientId, topicName, DebugUtils.payload2Str(publishMsg.payload()));
         } else {
             LOG.debug("Sending PUBLISH({}) message. MessageId={}, CId={}, topic={}", qos, packetId, clientId,
-                      topicName);
+                    topicName);
         }
         sendIfWritableElseDrop(publishMsg);
+        sendToPulsar(topicName, publishMsg);
+    }
+
+    /**
+     * Create a new producer and send message to pulsar broker
+     *
+     * @param topicName
+     * @param publishMsg
+     */
+    private void sendToPulsar(String topicName, MqttPublishMessage publishMsg) {
+        try {
+            Producer<MqttPublishMessage> producer = PulsarConnect.getPulsarCon().client.newProducer(Schema.AVRO(MqttPublishMessage.class))
+                    .topic(topicName)
+                    .create();
+            producer.send(publishMsg);
+        } catch (PulsarClientException e) {
+            LOG.error("Error while sending msg to pulsar {}", e);
+        }
     }
 
     void sendIfWritableElseDrop(MqttMessage msg) {
@@ -407,8 +429,7 @@ final class MQTTConnection {
             ChannelFuture channelFuture;
             if (brokerConfig.isImmediateBufferFlush()) {
                 channelFuture = channel.writeAndFlush(msg);
-            }
-            else {
+            } else {
                 channelFuture = channel.write(msg);
             }
             channelFuture.addListener(FIRE_EXCEPTION_ON_FAILURE);
@@ -426,7 +447,7 @@ final class MQTTConnection {
     void sendPubAck(int messageID) {
         LOG.trace("sendPubAck invoked");
         MqttFixedHeader fixedHeader = new MqttFixedHeader(MqttMessageType.PUBACK, false, AT_MOST_ONCE,
-                                                  false, 0);
+                false, 0);
         MqttPubAckMessage pubAckMessage = new MqttPubAckMessage(fixedHeader, from(messageID));
         sendIfWritableElseDrop(pubAckMessage);
     }

@@ -16,6 +16,12 @@
 
 package com.echostreams.pulsar.mqtt.broker.subscriptions;
 
+import com.echostreams.pulsar.mqtt.BrokerConstants;
+import com.echostreams.pulsar.mqtt.broker.utils.TopicUtils;
+import org.h2.util.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.Serializable;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -23,9 +29,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class Topic implements Serializable {
 
@@ -44,7 +47,7 @@ public class Topic implements Serializable {
      *
      * @param s the topic string (es "/a/b").
      * @return the created Topic instance.
-     * */
+     */
     public static Topic asTopic(String s) {
         return new Topic(s);
     }
@@ -74,11 +77,35 @@ public class Topic implements Serializable {
         return tokens;
     }
 
+    /**
+     * Return true if topic is having the valid prefix.
+     *
+     * @param topic
+     * @return
+     */
+    private boolean validateTopicPrefix(String topic) {
+        String persistent = BrokerConstants.PERSISTENT_NAME + "://";
+        String nonPersistent = BrokerConstants.NON_PERSISTENT_NAME + "://";
+        boolean isPrefixValid = false;
+        if (topic.length() > 14 && (persistent.equals(topic.substring(0, persistent.length())) ||
+                nonPersistent.equals(topic.substring(0, nonPersistent.length())))) {
+            isPrefixValid = true;
+
+        }
+        return isPrefixValid;
+    }
+
     private List<Token> parseTopic(String topic) throws ParseException {
         if (topic.length() == 0) {
             throw new ParseException("Bad format of topic, topic MUST be at least 1 character [MQTT-4.7.3-1] and " +
-                                     "this was empty", 0);
+                    "this was empty", 0);
         }
+
+        // topic prefix is not added/valid so use default prefix set on config file
+        if (!validateTopicPrefix(topic)) {
+            topic = TopicUtils.createTopicWithPrefix(TopicUtils.getDefaultPrefixWithoutTopic(), topic);
+        }
+
         List<Token> res = new ArrayList<>();
         String[] splitted = topic.split("/");
 
@@ -116,6 +143,11 @@ public class Topic implements Serializable {
                 res.add(Token.SINGLE);
             } else if (s.contains("+")) {
                 throw new ParseException("Bad format of topic, invalid subtopic name: " + s, i);
+            } else if (!StringUtils.isNullOrEmpty(BrokerConstants.TOPIC_PROCESSING_IDENTIFIER)) {
+                if (TopicUtils.matchTopicWithPattern(s))
+                    res.add(new Token(s));
+                else
+                    throw new ParseException("Bad format of topic: " + s + " Regular Expression didn't match: " + BrokerConstants.TOPIC_PROCESSING_IDENTIFIER, i);
             } else {
                 res.add(new Token(s));
             }
@@ -140,7 +172,7 @@ public class Topic implements Serializable {
 
     /**
      * @return a new Topic corresponding to this less than the head token
-     * */
+     */
     public Topic exceptHeadToken() {
         List<Token> tokens = getTokens();
         if (tokens.isEmpty()) {
@@ -161,8 +193,7 @@ public class Topic implements Serializable {
     /**
      * Verify if the 2 topics matching respecting the rules of MQTT Appendix A
      *
-     * @param subscriptionTopic
-     *            the topic filter of the subscription
+     * @param subscriptionTopic the topic filter of the subscription
      * @return true if the two topics match.
      */
     // TODO reimplement with iterators or with queues

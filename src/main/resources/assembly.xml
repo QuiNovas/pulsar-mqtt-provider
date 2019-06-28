@@ -16,9 +16,10 @@
                 <include>acl.conf</include>
                 <include>password_file.conf</include>
                 <include>logback.xml</include>
-                <include>pulsarMqttProvider.sh</include>
-                <include>pulsarMqttProvider.bat</include>
+                <include>startApp.sh</include>
+                <include>startApp.bat</include>
             </includes>
+            <lineEnding>unix</lineEnding>
         </fileSet>
     </fileSets>
     <dependencySets>

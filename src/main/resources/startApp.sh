@@ -1,42 +1,17 @@
 #!/bin/sh
+# Copyright (c) 2019 Quinovas
 #
-# Copyright (c) 2012-2015 Andrea Selva
-#
 
-echo "                                                                         "
-echo "  ___  ___                       _   _        ___  ________ _____ _____  "
-echo "  |  \/  |                      | | | |       |  \/  |  _  |_   _|_   _| "
-echo "  | .  . | ___   __ _ _   _  ___| |_| |_ ___  | .  . | | | | | |   | |   "
-echo "  | |\/| |/ _ \ / _\ | | | |/ _ \ __| __/ _ \ | |\/| | | | | | |   | |   "
-echo "  | |  | | (_) | (_| | |_| |  __/ |_| ||  __/ | |  | \ \/' / | |   | |   "
-echo "  \_|  |_/\___/ \__, |\__,_|\___|\__|\__\___| \_|  |_/\_/\_\ \_/   \_/   "
-echo "                   | |                                                   "
-echo "                   |_|                                                   "
-echo "                                                                         "
-echo "                                               version: 0..13-SNAPSHOT   "
-
-
-cd "$(dirname "$0")"
-
-# resolve links - $0 may be a softlink
-PRG="$0"
-
-while [ -h "$PRG" ]; do
-  ls=`ls -ld "$PRG"`
-  link=`expr "$ls" : '.*-> \(.*\)$'`
-  if expr "$link" : '/.*' > /dev/null; then
-    PRG="$link"
-  else
-    PRG=`dirname "$PRG"`/"$link"
-  fi
-done
-
-# Get standard environment variables
-PRGDIR=`dirname "$PRG"`
-
-# Only set MOQUETTE_HOME if not already set
-[ -f "$MOQUETTE_HOME"/bin/moquette.sh ] || MOQUETTE_HOME=`cd "$PRGDIR/.." ; pwd`
-export MOQUETTE_HOME
+echo "                                                                          "
+echo "  ______      _                 ___  ________ _____ _____                 "
+echo "  | ___ \    | |                |  \/  |  _  |_   _|_   _|                "
+echo "  | |_/ /   _| |___  __ _ _ __  | .  . | | | | | |   | |                  "
+echo "  |  __/ | | | / __|/ _  | '__| | |\/| | | | | | |   | |                  "
+echo "  | |  | |_| | \__ \ (_| | |    | |  | \ \/' / | |   | |                  "
+echo "  \_|   \__,_|_|___/\__,_|_|    \_|  |_/\_/\_\ \_/   \_/                  "
+echo "										                                    "
+echo "                                 version: 1.0-SNAPSHOT   			        "
+echo "										                                    "
 
 # Set JavaHome if it exists
 if [ -f "${JAVA_HOME}/bin/java" ]; then 
@@ -46,10 +21,14 @@ else
 fi
 export JAVA
 
-LOG_FILE=$MOQUETTE_HOME/config/moquette-log.properties
-MOQUETTE_PATH=$MOQUETTE_HOME/
-#LOG_CONSOLE_LEVEL=info
-#LOG_FILE_LEVEL=fine
+PULSAR_MQTT_PATH=${PWD}
+
+echo Using JAVA_HOME:       "$JAVA_HOME"
+echo Using PULSAR_MQTT_PATH:   "$PULSAR_MQTT_PATH"
+
+## This class has the main method to start the app
+MAIN_CLASS=com.echostreams.pulsar.mqtt.broker.Server
+
 JAVA_OPTS_SCRIPT="-XX:+HeapDumpOnOutOfMemoryError -Djava.awt.headless=true"
 
 ## Use the Hotspot garbage-first collector.
@@ -88,10 +67,9 @@ JAVA_OPTS="$JAVA_OPTS -XX:+PrintTenuringDistribution"
 JAVA_OPTS="$JAVA_OPTS -XX:+PrintGCApplicationStoppedTime"
 JAVA_OPTS="$JAVA_OPTS -XX:+PrintPromotionFailure"
 #JAVA_OPTS="$JAVA_OPTS -XX:PrintFLSStatistics=1"
-#JAVA_OPTS="$JAVA_OPTS -Xloggc:/var/log/moquette/gc.log"
-JAVA_OPTS="$JAVA_OPTS -Xloggc:$MOQUETTE_HOME/gc.log"
+JAVA_OPTS="$JAVA_OPTS -Xloggc:$PULSAR_MQTT_PATH/logs/gc.log"
 JAVA_OPTS="$JAVA_OPTS -XX:+UseGCLogFileRotation"
 JAVA_OPTS="$JAVA_OPTS -XX:NumberOfGCLogFiles=10"
 JAVA_OPTS="$JAVA_OPTS -XX:GCLogFileSize=10M"
 
-$JAVA -server $JAVA_OPTS $JAVA_OPTS_SCRIPT -Dlog4j.configuration="file:$LOG_FILE" -Dmoquette.path="$MOQUETTE_PATH" -cp "$MOQUETTE_HOME/lib/*" Server
+$JAVA -server $JAVA_OPTS $JAVA_OPTS_SCRIPT -cp "$PULSAR_MQTT_PATH/lib/*" $MAIN_CLASS

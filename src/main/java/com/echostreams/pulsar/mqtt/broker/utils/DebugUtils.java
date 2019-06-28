@@ -14,7 +14,7 @@
  * You may elect to redistribute this code under either of these licenses.
  */
 
-package com.echostreams.pulsar.mqtt.broker;
+package com.echostreams.pulsar.mqtt.broker.utils;
 
 import io.netty.buffer.ByteBuf;
 

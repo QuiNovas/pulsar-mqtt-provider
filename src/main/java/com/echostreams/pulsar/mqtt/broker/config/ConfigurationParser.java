@@ -16,6 +16,9 @@
 
 package com.echostreams.pulsar.mqtt.broker.config;
 
+import com.echostreams.pulsar.mqtt.BrokerConstants;
+import com.echostreams.pulsar.mqtt.broker.utils.TopicUtils;
+import org.h2.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -98,6 +101,13 @@ class ConfigurationParser {
                     int delimiterIdx = line.indexOf(' ');
                     String key = line.substring(0, delimiterIdx).trim();
                     String value = line.substring(delimiterIdx).trim();
+
+                    // validate for message storage type value persistent or non-persistent only
+                    if (!StringUtils.isNullOrEmpty(key) && BrokerConstants.MESSAGE_STORAGE_TYPE_PROPERTY_NAME.equals(key)) {
+                        if (!TopicUtils.isValidMessageStorageTypeName(value)) {
+                            throw new ParseException(BrokerConstants.MESSAGE_STORAGE_TYPE_PROPERTY_NAME + " must be persistent or non-persistent only", 1);
+                        }
+                    }
 
                     m_properties.put(key, value);
                 }

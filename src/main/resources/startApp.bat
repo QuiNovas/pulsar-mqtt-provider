@@ -1,32 +1,31 @@
 @ECHO OFF
 rem #
-rem # Copyright (c) 2012-2015 Andrea Selva
+rem # Copyright (c) 2019 Quinovas
 rem #
 
-echo "                                                                         "
-echo "  ___  ___                       _   _        ___  ________ _____ _____  "
-echo "  |  \/  |                      | | | |       |  \/  |  _  |_   _|_   _| "
-echo "  | .  . | ___   __ _ _   _  ___| |_| |_ ___  | .  . | | | | | |   | |   "
-echo "  | |\/| |/ _ \ / _\ | | | |/ _ \ __| __/ _ \ | |\/| | | | | | |   | |   "
-echo "  | |  | | (_) | (_| | |_| |  __/ |_| ||  __/ | |  | \ \/' / | |   | |   "
-echo "  \_|  |_/\___/ \__, |\__,_|\___|\__|\__\___| \_|  |_/\_/\_\ \_/   \_/   "
-echo "                   | |                                                   "
-echo "                   |_|                                                   "
-echo "                                                                         "
-echo "                                               version: 0.13-SNAPSHOT    "
+echo "                                                                          "
+echo "  ______      _                 ___  ________ _____ _____                 "
+echo "  | ___ \    | |                |  \/  |  _  |_   _|_   _|                "
+echo "  | |_/ /   _| |___  __ _ _ __  | .  . | | | | | |   | |                  "
+echo "  |  __/ | | | / __|/ _  | '__| | |\/| | | | | | |   | |                  "
+echo "  | |  | |_| | \__ \ (_| | |    | |  | \ \/' / | |   | |                  "
+echo "  \_|   \__,_|_|___/\__,_|_|    \_|  |_/\_/\_\ \_/   \_/                  "
+echo "										                               "
+echo "                                 version: 1.0-SNAPSHOT   			        "
+echo "										                                    "
 
-set "CURRENT_DIR=%cd%"
-if not "%MOQUETTE_HOME%" == "" goto gotHome
-set "MOQUETTE_HOME=%CURRENT_DIR%"
-if exist "%MOQUETTE_HOME%\bin\moquette.bat" goto okHome
-cd ..
-set "MOQUETTE_HOME=%cd%"
-cd "%CURRENT_DIR%"
+
+set "PULSAR_MQTT_PATH=%cd%"
+
+if not "%PULSAR_MQTT_PATH%" == "" goto gotHome
+if exist "%PULSAR_MQTT_PATH%\startApp.bat" goto okHome
+
 :gotHome
-if exist "%MOQUETTE_HOME%\bin\moquette.bat" goto okHome
-    echo The MOQUETTE_HOME environment variable is not defined correctly
+if exist "%PULSAR_MQTT_PATH%\startApp.bat" goto okHome
+    echo The PULSAR_MQTT_PATH environment variable is not defined correctly
     echo This environment variable is needed to run this program
 goto end
+
 :okHome
 
 rem Set JavaHome if it exists
@@ -35,14 +34,14 @@ if exist { "%JAVA_HOME%\bin\java" } (
 )
 
 echo Using JAVA_HOME:       "%JAVA_HOME%"
-echo Using MOQUETTE_HOME:   "%MOQUETTE_HOME%"
+echo Using PULSAR_MQTT_PATH:   "%PULSAR_MQTT_PATH%"
 
-rem  set LOG_CONSOLE_LEVEL=info
-rem  set LOG_FILE_LEVEL=fine
+rem # This class has the main method to start the app
+set MAIN_CLASS=com.echostreams.pulsar.mqtt.broker.Server
+
 set JAVA_OPTS=
 set JAVA_OPTS_SCRIPT=-XX:+HeapDumpOnOutOfMemoryError -Djava.awt.headless=true
-set MOQUETTE_PATH=%MOQUETTE_HOME%
-set LOG_FILE=%MOQUETTE_HOME%\config\moquette-log.properties
+set PULSAR_MQTT_PATH=%PULSAR_MQTT_PATH%
 
 rem # Use the Hotspot garbage-first collector.
 set JAVA_OPTS=%JAVA_OPTS%  -XX:+UseG1GC
@@ -80,9 +79,9 @@ set JAVA_OPTS=%JAVA_OPTS% -XX:+PrintTenuringDistribution
 set JAVA_OPTS=%JAVA_OPTS% -XX:+PrintGCApplicationStoppedTime
 set JAVA_OPTS=%JAVA_OPTS% -XX:+PrintPromotionFailure
 rem set JAVA_OPTS=%JAVA_OPTS% -XX:PrintFLSStatistics=1
-rem set JAVA_OPTS=%JAVA_OPTS% -Xloggc:/var/log/moquette/gc.log
+set JAVA_OPTS=%JAVA_OPTS% -Xloggc:%PULSAR_MQTT_PATH%\logs\gc.log
 set JAVA_OPTS=%JAVA_OPTS% -XX:+UseGCLogFileRotation
 set JAVA_OPTS=%JAVA_OPTS% -XX:NumberOfGCLogFiles=10
 set JAVA_OPTS=%JAVA_OPTS% -XX:GCLogFileSize=10M
 
-%JAVA% -server %JAVA_OPTS% %JAVA_OPTS_SCRIPT% -Dmoquette.path=%MOQUETTE_PATH% -cp %MOQUETTE_HOME%\lib\* Server
+%JAVA% -server %JAVA_OPTS% %JAVA_OPTS_SCRIPT% -cp %PULSAR_MQTT_PATH%\lib\* %MAIN_CLASS%

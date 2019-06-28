@@ -176,7 +176,7 @@ class PostOffice {
         interceptor.notifyTopicPublished(msg, clientID, username);
     }
 
-    void receivedPublishQos1(MQTTConnection connection, Topic topic, String username, ByteBuf payload, int messageID,
+    void  receivedPublishQos1(MQTTConnection connection, Topic topic, String username, ByteBuf payload, int messageID,
                              boolean retain, MqttPublishMessage msg) {
         // verify if topic can be write
         topic.getTokens();

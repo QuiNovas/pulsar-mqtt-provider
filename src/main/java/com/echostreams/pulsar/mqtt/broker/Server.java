@@ -15,15 +15,16 @@
  */
 package com.echostreams.pulsar.mqtt.broker;
 
+import com.echostreams.pulsar.mqtt.BrokerConstants;
 import com.echostreams.pulsar.mqtt.broker.config.*;
 import com.echostreams.pulsar.mqtt.broker.security.*;
+import com.echostreams.pulsar.mqtt.broker.subscriptions.CTrieSubscriptionDirectory;
 import com.echostreams.pulsar.mqtt.broker.subscriptions.ISubscriptionsDirectory;
-import com.echostreams.pulsar.mqtt.BrokerConstants;
+import com.echostreams.pulsar.mqtt.broker.utils.TopicUtils;
+import com.echostreams.pulsar.mqtt.interception.BrokerInterceptor;
 import com.echostreams.pulsar.mqtt.interception.InterceptHandler;
 import com.echostreams.pulsar.mqtt.persistence.H2Builder;
 import com.echostreams.pulsar.mqtt.persistence.MemorySubscriptionsRepository;
-import com.echostreams.pulsar.mqtt.interception.BrokerInterceptor;
-import com.echostreams.pulsar.mqtt.broker.subscriptions.CTrieSubscriptionDirectory;
 import io.netty.handler.codec.mqtt.MqttPublishMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,7 +66,7 @@ public class Server {
      */
     public void startServer() throws IOException {
         File defaultConfigurationFile = defaultConfigFile();
-        LOG.info("Starting Moquette integration. Configuration file path={}", defaultConfigurationFile.getAbsolutePath());
+        LOG.info("Starting Pulsar-MQTT integration. Configuration file path={}", defaultConfigurationFile.getAbsolutePath());
         IResourceLoader classpathResourceLoader = new ClasspathResourceLoader();
         final IConfig config = new ResourceLoaderConfig(classpathResourceLoader);
         startServer(config);
@@ -181,6 +182,8 @@ public class Server {
         MQTTConnectionFactory connectionFactory = new MQTTConnectionFactory(brokerConfig, authenticator, sessions,
                 dispatcher);
 
+        updateValueWithConfigValue(config);
+
         final NewNettyMQTTHandler mqttHandler = new NewNettyMQTTHandler(connectionFactory);
         acceptor = new NewNettyAcceptor();
         acceptor.initialize(mqttHandler, config, sslCtxCreator);
@@ -188,6 +191,23 @@ public class Server {
         final long startTime = System.currentTimeMillis() - start;
         LOG.info("Moquette integration has been started successfully on in {} ms", startTime);
         initialized = true;
+    }
+
+    private void updateValueWithConfigValue(IConfig config) {
+        // set the regular expression value to match against with topic
+        BrokerConstants.TOPIC_PROCESSING_IDENTIFIER = config.getProperty(BrokerConstants.TOPIC_PROCESSING_IDENTIFIER_PROPERTY_NAME);
+
+        // set config property value for topic prefix
+        BrokerConstants.PERSISTENT_NAME = config.getProperty(BrokerConstants.MESSAGE_STORAGE_TYPE_PROPERTY_NAME);
+        BrokerConstants.TENANT_NAME = config.getProperty(BrokerConstants.TENANT_PROPERTY_NAME);
+        BrokerConstants.NAMESPACE_NAME = config.getProperty(BrokerConstants.NAMESPACE_PROPERTY_NAME);
+
+        // create prefix with defined in config file persistent://my-tenant/my-namespace OR non-persistent://my-tenant/my-namespace
+        TopicUtils.createOnlyPrefixWithConfigValues(BrokerConstants.PERSISTENT_NAME, BrokerConstants.TENANT_NAME, BrokerConstants.NAMESPACE_NAME);
+
+        // update PULSAR_SERVICE_URL
+        BrokerConstants.PULSAR_SERVICE_URL = config.getProperty(BrokerConstants.PULSAR_SERVICE_URL_PROPERTY_NAME);
+
     }
 
     private IAuthorizatorPolicy initializeAuthorizatorPolicy(IAuthorizatorPolicy authorizatorPolicy, IConfig props) {

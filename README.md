@@ -1,8 +1,10 @@
 ## Pulsar MQTT Provider
 
+Java server application that listens for MQTT traffic
+
 * [MQTT Documentation reference guide](http://mqtt.org/documentation/) Go here to check about MQTT
 * [Pulsar Documentation reference guide](https://pulsar.apache.org/) Go here to check about apache pulsar
-Java server application that listens for MQTT traffic
+
  
 ## Embedding in other projects
 
@@ -51,14 +53,15 @@ Ubuntu
 ```
 tar xvf pulsar-mqtt-provider-1.0-SNAPSHOT-bin.tar.gz
 cd pulsar-mqtt-provider-1.0-SNAPSHOT
-./pulsarMqttProvider.sh
+chmod 777 startApp.sh
+./startApp.sh
 ```
 
-Or if you are on Windows shell
+Or if you are on Windows shell, Unzip the build
 
 ```
  cd pulsar-mqtt-provider-1.0-SNAPSHOT
- .\pulsarMqttProvider.bat
+ .\startApp.bat
 ```
 
 ---

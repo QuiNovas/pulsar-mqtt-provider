@@ -17,7 +17,6 @@
 package com.echostreams.pulsar.mqtt.broker.config;
 
 import com.echostreams.pulsar.mqtt.BrokerConstants;
-import com.echostreams.pulsar.mqtt.broker.utils.CommonUtils;
 
 /**
  * Base interface for all configuration implementations (filesystem, memory or classpath)
@@ -58,17 +57,6 @@ public abstract class IConfig {
         setProperty(BrokerConstants.AUTHORIZATOR_CLASS_NAME, "");
         setProperty(BrokerConstants.NETTY_MAX_BYTES_PROPERTY_NAME,
                 String.valueOf(BrokerConstants.DEFAULT_NETTY_MAX_BYTES_IN_MESSAGE));
-
-        setProperty(BrokerConstants.PERSISTENT_PROPERTY_NAME, BrokerConstants.PERSISTENT_NAME);
-        setProperty(BrokerConstants.TENANT_PROPERTY_NAME, BrokerConstants.TENANT_NAME);
-        setProperty(BrokerConstants.NAMESPACE_PROPERTY_NAME, BrokerConstants.NAMESPACE_NAME);
-
-        // create topic prefix like this persistent://my-tenant/my-namespace
-        String pulsarDefaultTopicNamePrefix = CommonUtils.createTopicNameWithPrefix(
-                getProperty(BrokerConstants.PERSISTENT_PROPERTY_NAME),
-                getProperty(BrokerConstants.TENANT_PROPERTY_NAME),
-                getProperty(BrokerConstants.NAMESPACE_PROPERTY_NAME), null);
-        setProperty(BrokerConstants.PULSAR_TOPIC_NAME_PREFIX, pulsarDefaultTopicNamePrefix);
 
     }
 
