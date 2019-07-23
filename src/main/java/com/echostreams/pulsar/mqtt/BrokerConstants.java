@@ -99,8 +99,8 @@ public final class BrokerConstants {
     public static final String SINGLE_FORWARD_SLASH = "/";
 
     public static String PERSISTENT_NAME = "persistent";
-    public static String TENANT_NAME = "default-tenant";
-    public static String NAMESPACE_NAME = "default-namespace";
+    public static String TENANT_NAME = "public";
+    public static String NAMESPACE_NAME = "default";
     public static String NON_PERSISTENT_NAME = "non-persistent";
     public static String PULSAR_TOPIC_NAME_PREFIX = PERSISTENT_NAME + DOUBLE_FORWARD_SLASH + TENANT_NAME + SINGLE_FORWARD_SLASH + NAMESPACE_NAME;
     public static String TOPIC_PROCESSING_IDENTIFIER = null;

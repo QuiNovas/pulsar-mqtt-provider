@@ -36,6 +36,13 @@ if exist { "%JAVA_HOME%\bin\java" } (
 echo Using JAVA_HOME:       "%JAVA_HOME%"
 echo Using PULSAR_MQTT_PATH:   "%PULSAR_MQTT_PATH%"
 
+rem create gc.log file
+IF NOT EXIST "%PULSAR_MQTT_PATH%\logs\gc.log" (
+    mkdir "%PULSAR_MQTT_PATH%\logs" 2>nul
+    type NUL > "%PULSAR_MQTT_PATH%\logs\gc.log"
+
+ )
+
 rem # This class has the main method to start the app
 set MAIN_CLASS=com.echostreams.pulsar.mqtt.broker.Server
 

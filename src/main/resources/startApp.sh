@@ -26,6 +26,12 @@ PULSAR_MQTT_PATH=${PWD}
 echo Using JAVA_HOME:       "$JAVA_HOME"
 echo Using PULSAR_MQTT_PATH:   "$PULSAR_MQTT_PATH"
 
+# create gc.log file
+if [! -f "$PULSAR_MQTT_PATH/logs/gc.log" ]; then
+   mkdir -p "$PULSAR_MQTT_PATH/logs"
+   touch "$PULSAR_MQTT_PATH/logs/gc.log"
+fi
+
 ## This class has the main method to start the app
 MAIN_CLASS=com.echostreams.pulsar.mqtt.broker.Server
 
